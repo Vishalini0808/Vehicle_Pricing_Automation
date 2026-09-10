@@ -129,13 +129,155 @@ entity MTOConfigurations {
 
 
 entity MTOConfigurationParts {
-    key partNo          : Integer;
-    configuration       : Association to MTOConfigurations;  // MTO configuration this part belongs to
-    part                : Association to Parts;              // Part selected for this configuration
-    quantity            : Integer;                           // Quantity of this part required
+    key partNo        : Integer;
+        configuration : Association to MTOConfigurations; // MTO configuration this part belongs to
+        part          : Association to Parts; // Part selected for this configuration
+        quantity      : Integer; // Quantity of this part required
 };
 
- 
+
+entity PricingResults {
+
+    key ID                  : UUID; // Unique ID for each pricing result
+
+
+        /* References */
+
+        model               : Association to Models; // Vehicle model for which pricing is calculated
+
+        region              : Association to Regions; // Region/state for which pricing is calculated
+
+        orderType           : String(10); // Type of pricing: MTS / MTO / EV / GEM / CSD
+
+        submission          : Association to Submissions; // Submission/request associated with this pricing calculation
+
+
+        /* Input */
+
+        inputNSP            : Decimal(15, 2); // NSP entered by the user for bottom-up pricing
+
+        exShowroomInput     : Decimal(15, 2); // Target Ex-Showroom entered by the user for reverse/top-down pricing
+
+
+        /* MTS */
+
+        actualNSP           : Decimal(15, 2); // Final NSP used for the MTS calculation
+
+        helmet              : Decimal(15, 2); // Helmet cost included in Dealer Cost
+
+        transportation      : Decimal(15, 2); // Transportation/logistics cost included in Dealer Cost
+
+        dealerCost          : Decimal(15, 2); // Dealer Cost = NSP + Helmet + Transportation
+
+        otherExpenses       : Decimal(15, 2); // Other expenses based on the applicable CC slab
+
+        dealerMargin        : Decimal(15, 2); // Dealer margin amount calculated using the configured margin percentage
+
+        helmetMargin        : Decimal(15, 2); // Margin added to the helmet cost
+
+        totalDealerMargin   : Decimal(15, 2); // Total Dealer Margin = Dealer Margin + Helmet Margin
+
+        ndp                 : Decimal(15, 2); // Net Dealer Price = Dealer Cost × (1 + GST %)
+
+        basicPrice          : Decimal(15, 2); // Basic taxable vehicle price before GST
+
+        gstAmount           : Decimal(15, 2); // GST amount calculated on the Basic Price
+
+        exShowroomPrice     : Decimal(15, 2); // Final Ex-Showroom Price = Basic Price + GST Amount
+
+
+        /* RTO */
+
+        rtoPercent          : Decimal(7, 4); // RTO percentage obtained from the applicable RTO Master slab
+
+        rtoAmount           : Decimal(15, 2); // RTO amount calculated based on region basis and applicable RTO rule
+
+        rtoWithBill         : Decimal(15, 2); // RTO With Bill amount obtained from RTO Expense/configuration
+
+
+        /* Insurance */
+
+        insuranceRate       : Decimal(7, 4); // Insurance rate applicable to the vehicle's CC band
+
+        insuranceAmount     : Decimal(15, 2); // Insurance amount calculated using Ex-Showroom and applicable insurance rate
+
+        tpaPa               : Decimal(15, 2); // TPA/PA charge applicable to the vehicle
+
+        insuranceGst        : Decimal(15, 2); // GST calculated on Insurance Amount + TPA/PA
+
+        totalInsurance      : Decimal(15, 2); // Total Insurance = Insurance Amount + TPA/PA + Insurance GST
+
+        onRoadPrice         : Decimal(15, 2); // Final On-Road Price = Ex-Showroom + RTO + RTO With Bill + Total Insurance
+
+
+        /* MTO */
+
+        referenceMTSModel   : Association to Models; // Approved MTS model used as the reference for MTO pricing
+
+        mtsExShowroom       : Decimal(15, 2); // Ex-Showroom price of the reference MTS model
+
+        mtsOnRoad           : Decimal(15, 2); // On-Road price of the reference MTS model
+
+        miyExShowroomTotal  : Decimal(15, 2); // Total MIY cost of parts that increase the Ex-Showroom price
+
+        miyOnRoadTotal      : Decimal(15, 2); // Total MIY cost of parts that increase only the On-Road price
+
+        expectedExShowroom  : Decimal(15, 2); // Expected MTO Ex-Showroom = MTS Ex-Showroom + applicable MIY costs
+
+        expectedOnRoad      : Decimal(15, 2); // Expected MTO On-Road = MTS On-Road + applicable MIY costs
+
+        incrementDealer     : Decimal(15, 2); // Additional dealer margin from the MIY markup of fitted MTO parts
+
+
+        /* GeM */
+
+        lowestMtsExShowroom : Decimal(15, 2); // Lowest approved MTS Ex-Showroom price across all regions
+
+        gemDiscountPercent  : Decimal(7, 4); // GeM discount percentage, normally 12%
+
+        gemDiscountAmount   : Decimal(15, 2); // GeM Discount Amount = Lowest MTS Ex-Showroom × GeM Discount %
+
+        gemSubTotal         : Decimal(15, 2); // GeM Sub-Total = Lowest MTS Ex-Showroom - GeM Discount Amount
+
+        gemBasic            : Decimal(15, 2); // GST-exclusive GeM price = GeM Sub-Total ÷ (1 + GST %)
+
+        gemGstAmount        : Decimal(15, 2); // GST amount backed out from the GeM Sub-Total
+
+        finalGemPrice       : Decimal(15, 2); // Final GeM Price after applying the GeM discount
+
+
+        /* CSD */
+
+        csdNsp              : Decimal(15, 2); // CSD NSP = MTS Actual NSP + Transportation + Other Expenses + Total Dealer Margin
+
+        csdBasicExclHelmet  : Decimal(15, 2); // MTS Basic Price excluding Helmet and Helmet Margin
+
+        csdDiscountPercent  : Decimal(7, 4); // CSD discount percentage configured for the model
+
+        csdDiscountAmount   : Decimal(15, 2); // CSD Discount Amount = CSD NSP × CSD Discount %
+
+        csdPreTaxNet        : Decimal(15, 2); // Pre-Tax Net = Basic Price excluding Helmet - CSD Discount Amount
+
+        csdGstPercent       : Decimal(7, 4); // GST percentage applicable specifically to CSD pricing
+
+        csdGstAmount        : Decimal(15, 2); // CSD GST Amount = Pre-Tax Net × CSD GST %
+
+        csdExShowroom       : Decimal(15, 2); // CSD Ex-Showroom = Pre-Tax Net + CSD GST Amount
+
+        incidentalPercent   : Decimal(7, 4); // Incidental charge percentage, normally 1%
+
+        incidentalCharges   : Decimal(15, 2); // Incidental Charges = Pre-Tax Net × Incidental %
+
+        finalCsdPrice       : Decimal(15, 2); // Final CSD Price = CSD Ex-Showroom + Incidental Charges
+
+        csdOnRoad           : Decimal(15, 2); // CSD On-Road = CSD Ex-Showroom + RTO + RTO With Bill + Total Insurance
+
+
+        /* Approval */
+
+        status              : ApprovalStatus; // Approval status of the pricing result: DRAFT / SUBMITTED / APPROVED / REJECTED
+}
+
 entity Submissions {
     key ID              : UUID;
         referenceNumber : String(30); // Business reference number for tracking the request
