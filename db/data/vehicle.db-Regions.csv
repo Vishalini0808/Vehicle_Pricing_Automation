@@ -1,0 +1,29 @@
+regionCode,regionName,rtoBasis
+TN01,Tamil Nadu,ExShowroom
+KA02,Karnataka,ExShowroom
+KL03,Kerala,ExShowroom
+AP04,Andhra Pradesh,ExShowroom
+TS05,Telangana,ExShowroom
+MH06,Maharashtra,ExShowroom
+GJ07,Gujarat,ExShowroom
+RJ08,Rajasthan,ExShowroom
+DL09,Delhi,ExShowroom
+HR10,Haryana,ExShowroom
+PB11,Punjab,ExShowroom
+UP12,Uttar Pradesh,ExShowroom
+MP13,Madhya Pradesh,ExShowroom
+WB14,West Bengal,ExShowroom
+BR15,Bihar,ExShowroom
+OD16,Odisha,ExShowroom
+JH17,Jharkhand,ExShowroom
+CG18,Chhattisgarh,ExShowroom
+AS19,Assam,ExShowroom
+UK20,Uttarakhand,ExShowroom
+HP21,Himachal Pradesh,ExShowroom
+JK22,Jammu and Kashmir,ExShowroom
+GA23,Goa,ExShowroom
+AR24,Arunachal Pradesh,ExShowroom
+MN25,Manipur,ExShowroom
+ML26,Meghalaya,ExShowroom
+TR27,Tripura,ExShowroom
+SK28,Sikkim,ExShowroom
