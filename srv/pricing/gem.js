@@ -49,14 +49,12 @@ async function calculateGeM(modelCode) {
 
     const discountPercent = 12;
 
-    const discountAmount =
-        mtsExShowroom * (discountPercent / 100);
+    const discountAmount = mtsExShowroom * (discountPercent / 100);
 
     // 6. Final GeM Price
     //    Sub-Total = Ex-Showroom - Discount
 
-    const gemPrice =
-        mtsExShowroom - discountAmount;
+    const gemPrice = mtsExShowroom - discountAmount;
 
     // 7. Get GST % from Model Master
 
@@ -67,19 +65,15 @@ async function calculateGeM(modelCode) {
     // 8. Back out GST
     //    GeM Basic = Sub-Total / (1 + GST %)
 
-    const gemBasic =
-        gemPrice / (1 + gstPercent / 100);
+    const gemBasic = gemPrice / (1 + gstPercent / 100);
 
     // 9. Calculate GeM GST Amount
     //    GST Amount = Sub-Total - GeM Basic
 
-    const gemGSTAmount =
-        gemPrice - gemBasic;
+    const gemGSTAmount = gemPrice - gemBasic;
 
     // 10. Create PricingResults record
     const gemResult = {
-        ID: cds.utils.uuid(),
-
         // Model
         model_modelCode: modelCode,
 

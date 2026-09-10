@@ -27,7 +27,6 @@ type engineType     : String enum {
 entity Models {
     key modelCode           : String(40);
         validFrom           : Date; // Date from which this pricing is effective
-        nspPrice            : Decimal(15, 2); // Main vehicle base price / NSP
 
         modelDescription    : String(200); // vehicle desc
         engineType          : engineType default 'Petrol'; // petrol/diesel/ev
@@ -146,6 +145,8 @@ entity PricingResults {
         model               : Association to Models; // Vehicle model for which pricing is calculated
 
         region              : Association to Regions; // Region/state for which pricing is calculated
+
+        nspPrice            : Decimal(15, 2); // Main vehicle base price / NSP
 
         orderType           : String(10); // Type of pricing: MTS / MTO / EV / GEM / CSD
 

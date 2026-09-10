@@ -38,7 +38,7 @@ service PricingService {
 
     action calculateEV();
 
-    action calculateGeM();
+    action calculateGeM(modelCode:String(20));
 
     action calculateCSD();
 
