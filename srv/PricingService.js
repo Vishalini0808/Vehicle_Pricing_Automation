@@ -8,7 +8,7 @@ const cds = require("@sap/cds");
 // const { approvePricing, rejectPricing } = require("./workflow/approval");
 // const { calculateMultiRegion } = require("./region/multiRegion");
 
-module.exports = cds.service.impl(async function () {
+module.exports = cds.service.impl( async function () {
 
     // this.on("calculateMTS", calculateMTS);
 
