@@ -21,7 +21,6 @@ entity Regions {
 
 type engineType     : String enum {
     Petrol;
-    Diesel;
     EV
 };
 
