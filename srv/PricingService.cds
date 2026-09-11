@@ -31,9 +31,27 @@ service PricingService {
 
     // actions:
 
+    type MTSResult {
+    NSP               : Decimal(15,2);
+    dealerCost        : Decimal(15,2);
+    NDP               : Decimal(15,2);
+    dealerMargin      : Decimal(15,2);
+    totalDealerMargin : Decimal(15,2);
+    otherExpenses     : Decimal(15,2);
+    basicPrice        : Decimal(15,2);
+    gstAmount         : Decimal(15,2);
+    exShowroomPrice   : Decimal(15,2);
+    rtoAmount         : Decimal(15,2);
+    rtoWithBill       : Decimal(15,2);
+    insuranceAmount   : Decimal(15,2);
+    tpaPa             : Decimal(15,2);
+    insuranceGst      : Decimal(15,2);
+    totalInsurance    : Decimal(15,2);
+    onRoadPrice       : Decimal(15,2);
+}
 
-    action calculateMTS();
-
+    action calculateMTS( NSP : Decimal(15,2), regionCode : String(20), engineType : String(20), modelCode  : String(20)) returns MTSResult;
+    
     action calculateMTO();
 
     action calculateEV();
