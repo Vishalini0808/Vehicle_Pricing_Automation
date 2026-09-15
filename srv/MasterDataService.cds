@@ -1,6 +1,6 @@
 using {vehicle.db as db} from '../db/vehicle-pricing-schema';
  
-@path: '/master'
+//@path: '/master'
 service MasterService {
  
     entity Regions
@@ -27,5 +27,5 @@ service MasterService {
     entity MTOConfigurationParts
         as projection on db.MTOConfigurationParts;
  
-    
+
 }
