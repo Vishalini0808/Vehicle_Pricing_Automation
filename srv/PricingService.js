@@ -1,8 +1,8 @@
 const cds = require("@sap/cds");
 const { calculateMTS } = require("./pricing/mts");
-// const { calculateMTO } = require("./pricing/mto");
-// const { calculateEV } = require("./pricing/ev");
-const { calculateGeM } = require("./pricing/gem");
+const  calculateMTO = require("./pricing/mto");
+const { calculateEV } = require("./pricing/ev");
+//const { calculateGeM } = require("./pricing/gem");
 // const { calculateCSD } = require("./pricing/csd");
 // const { submitPricing } = require("./workflow/submission");
 // const { approvePricing, rejectPricing } = require("./workflow/approval");
@@ -34,11 +34,12 @@ module.exports = cds.service.impl( async function () {
     });
 
 
-    // this.on("calculateMTO", calculateMTO);
+     this.on("calculateMTO", calculateMTO);
 
-    // this.on("calculateEV", calculateEV);
+     this.on("calculateEV", calculateEV);
 
-    this.on("calculateGeM", calculateGeM);
+         
+    //this.on("calculateGeM", calculateGeM);
 
     // this.on("calculateCSD", calculateCSD);
 

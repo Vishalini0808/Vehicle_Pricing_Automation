@@ -18,7 +18,10 @@ entity Regions {
         rtoBasis   : String(20); //rto price
 }
 
-
+type  orderTypes:String enum{
+    MTO;
+    MTS
+}
 type engineType     : String enum {
     Petrol;
     EV
@@ -27,7 +30,7 @@ type engineType     : String enum {
 entity Models {
     key modelCode           : String(40);
         validFrom           : Date; // Date from which this pricing is effective
-
+         orderType:orderTypes;
         modelDescription    : String(200); // vehicle desc
         engineType          : engineType default 'Petrol'; // petrol/diesel/ev
         ccWatt              : Decimal(10, 2); // Engine CC for fuel vehichels / electric watt for EV
