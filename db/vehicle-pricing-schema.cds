@@ -95,13 +95,13 @@ entity RTOExpense {
     key id             : UUID; // Unique ID for the RTO expense record
         region         : Association to Regions; // Region/state to which the expense applies
         slab           : Integer; // RTO expense slab/category
+        engineType     : engineType default 'Petrol'; // Engine type to which the RTO rule applies
 
         minimumPrice   : Decimal(15, 2); // Minimum vehicle price for this expense range
         maximumPrice   : Decimal(15, 2); // Maximum vehicle price for this expense range
 
         percentage     : Decimal(7, 4); // Expense percentage applied to the vehicle price
         fixedAmount    : Decimal(15, 2); // Fixed expense amount when applicable
-
 
         approvalStatus : ApprovalStatus default 'DRAFT';
 }
