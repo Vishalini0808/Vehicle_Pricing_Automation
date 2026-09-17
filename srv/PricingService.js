@@ -1,6 +1,6 @@
 const cds = require("@sap/cds");
 const { calculateMTS } = require("./pricing/mts");
- const { calculateMTO } = require("./pricing/mto");
+ const  calculateMTO = require("./pricing/mto");
 const { calculateEV } = require("./pricing/ev");
 //const { calculateGeM } = require("./pricing/gem");
 // const { calculateCSD } = require("./pricing/csd");
@@ -17,6 +17,7 @@ module.exports = cds.service.impl(async function () {
 
      this.on("calculateEV", calculateEV);
 
+         
     //this.on("calculateGeM", calculateGeM);
 
     // this.on("calculateCSD", calculateCSD);

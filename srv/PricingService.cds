@@ -26,86 +26,79 @@ service PricingService {
  
     entity MTOConfigurationParts
         as projection on db.MTOConfigurationParts;
+ entity PricingResults
+        as projection on db.PricingResults;
 
 
-
-    // actions:
-
-
-    // action calculateMTS();
-
-type MTSInput {
-    modelCode  : String(40);
-    nsp        : Decimal(15,2);
-    regionCode : String(10);
-}
+//--------mts----------
 
 type MTSResult {
-    modelCode         : String(40);
-    regionCode        : String(10);
-    actualNSP         : Decimal(15,2);
-
-    helmet            : Decimal(15,2);
-    transportation    : Decimal(15,2);
+    NSP               : Decimal(15,2);
     dealerCost        : Decimal(15,2);
-    otherExpenses     : Decimal(15,2);
-
+    NDP               : Decimal(15,2);
     dealerMargin      : Decimal(15,2);
-    helmetMargin      : Decimal(15,2);
     totalDealerMargin : Decimal(15,2);
-
+    otherExpenses     : Decimal(15,2);
     basicPrice        : Decimal(15,2);
     gstAmount         : Decimal(15,2);
     exShowroomPrice   : Decimal(15,2);
+    rtoAmount         : Decimal(15,2);
+    rtoWithBill       : Decimal(15,2);
+    insuranceAmount   : Decimal(15,2);
+    tpaPa             : Decimal(15,2);
+    insuranceGst      : Decimal(15,2);
+    totalInsurance    : Decimal(15,2);
+    onRoadPrice       : Decimal(15,2);
 }
-
-action calculateMTS(
-    item : MTSInput
-) returns MTSResult;
-
-
+ 
+    action calculateMTS( NSP : Decimal(15,2), regionCode : String(20), engineType : String(20), modelCode  : String(20)) returns MTSResult;
 
 //---------------mto----------------------
-// type MTOInput {
-//     mtoModelCode : String(40);
-//     regionCode   : String(10);
-// }
+type MTOPartInput {
+    partCode : String(50);
+    quantity : Integer;
+}
 
 type MTOInput {
-    mtoModelCode          : String(40);
-    regionCode            : String(10);
-
-    approvedMTSNSP        : Decimal(15,2);
-    approvedMTSExShowroom  : Decimal(15,2);
-    approvedMTSOnRoad      : Decimal(15,2);
+    modelCode  : String(40);
+    regionCode : String(20);
+    engineType : String(20);
+    orderType  : String(10);
+    validFrom  : Date;
+    parts      : many MTOPartInput;
 }
+
 type MTOResult {
+    modelCode           : String(40);
+    mtoModelCode        : String(40);
+    regionCode          : String(20);
+    engineType          : String(20);
+    orderType           : String(10);
 
-    mtoModelCode       : String(40);
-    referenceMTSModel  : String(40);
-    regionCode         : String(10);
+    referenceMTSModel   : String(40);
 
-    mtsNSP             : Decimal(15,2);
-    mtsExShowroom      : Decimal(15,2);
-    mtsOnRoad          : Decimal(15,2);
+    mtsNSP              : Decimal(15,2);
+    mtsExShowroom       : Decimal(15,2);
+    mtsOnRoad           : Decimal(15,2);
 
-    miyExShowroomTotal : Decimal(15,2);
-    miyOnRoadTotal     : Decimal(15,2);
+    miyExShowroomTotal  : Decimal(15,2);
+    miyOnRoadTotal      : Decimal(15,2);
 
-    expectedExShowroom : Decimal(15,2);
-    expectedOnRoad     : Decimal(15,2);
+    expectedExShowroom  : Decimal(15,2);
+    expectedOnRoad      : Decimal(15,2);
 
-    mtoNSP             : Decimal(15,2);
-    mtoExShowroom      : Decimal(15,2);
-    mtoOnRoad          : Decimal(15,2);
+    actualNSP           : Decimal(15,2);
+    exShowroomPrice     : Decimal(15,2);
+    onRoadPrice         : Decimal(15,2);
 
-    incrementDealer    : Decimal(15,2);
+    incrementDealer     : Decimal(15,2);
+    iterations          : Integer;
 }
 
-
-action calculateMTO(item : MTOInput) returns MTOResult;
-   // action calculateMTO();
-
+action calculateMTO(
+    items : many MTOInput
+) returns many MTOResult;
+//---------------------ev---------------------------
 type EVInput {
     modelCode  : String(40);
     nsp        : Decimal(15,2);
@@ -136,8 +129,8 @@ type EVResult {
 
 action calculateEV(item : EVInput) returns EVResult;
     //action calculateEV();
-
-    action calculateGeM(modelCode:String(20));
+//--------------------------gem----------------------------
+   
 
     action calculateCSD();
 
