@@ -55,31 +55,33 @@ async function calculateMTO(req) {
 
         if (engineType && mtsModel.engineType !== engineType) req.error(400, `Engine type ${engineType} does not match MTS Model ${modelCode}`);
 
-console.log("\nSTEP 3: CHECK MTS PRICING RESULT");
+        console.log("\nSTEP 3: CHECK MTS PRICING RESULT");
 
-const allPricingResults = await tx.run(SELECT.from(PricingResults));
+        const allPricingResults = await tx.run(SELECT.from(PricingResults));
 
-console.log("TOTAL PRICING RESULTS :", allPricingResults.length);
+        console.log("TOTAL PRICING RESULTS :", allPricingResults.length);
 
-const mtsPricingResult = allPricingResults.find(row =>
-    row.model_modelCode === modelCode &&
-    row.region_regionCode === regionCode &&
-    row.orderType === "MTS"
-);
+        const mtsPricingResult = allPricingResults.find(row =>
+            row.model_modelCode === modelCode &&
+            row.region_regionCode === regionCode &&
+            row.orderType === "MTS"
+        );
 
-if (!mtsPricingResult) {
-    req.error(404, `MTS PricingResult not found for ${modelCode} / ${regionCode}`);
-}
+        if (!mtsPricingResult) {
+            req.error(404, `MTS PricingResult not found for ${modelCode} / ${regionCode}`);
+        }
 
-console.log("MTS PricingResult found");
-console.log("Status :", mtsPricingResult.status);
-console.log("Actual NSP :", mtsPricingResult.actualNSP);
-console.log("Ex-Showroom :", mtsPricingResult.exShowroomPrice);
-console.log("On-Road :", mtsPricingResult.onRoadPrice);
+        console.log("MTS PricingResult found");
+        console.log("Status :", mtsPricingResult.status);
+        console.log("Actual NSP :", mtsPricingResult.actualNSP);
+        console.log("Ex-Showroom :", mtsPricingResult.exShowroomPrice);
+        console.log("On-Road :", mtsPricingResult.onRoadPrice);
 
-const mtsNSP = Number(mtsPricingResult.actualNSP || 0);
-const mtsExShowroom = Number(mtsPricingResult.exShowroomPrice || 0);
-const mtsOnRoad = Number(mtsPricingResult.onRoadPrice || 0);
+        const mtsNSP = Number(mtsPricingResult.actualNSP || 0);
+        const mtsExShowroom = Number(mtsPricingResult.exShowroomPrice || 0);
+        const mtsOnRoad = Number(mtsPricingResult.onRoadPrice || 0);
+        
+        
         console.log("\nSTEP 4: FIND SELECTED PARTS");
 
         let miyExShowroomTotal = 0;

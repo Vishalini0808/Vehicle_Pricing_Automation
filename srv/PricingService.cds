@@ -1,6 +1,6 @@
 using vehicle.db as db from '../db/vehicle-pricing-schema';
  
-//@path: '/pricing'
+@path: '/pricing'
 service PricingService {
  
     entity Regions
@@ -50,8 +50,9 @@ type MTSResult {
     totalInsurance    : Decimal(15,2);
     onRoadPrice       : Decimal(15,2);
 }
- 
-    action calculateMTS( NSP : Decimal(15,2), regionCode : String(20), engineType : String(20), modelCode  : String(20)) returns MTSResult;
+
+action calculateMTS( NSP : Decimal(15,2), regionCode : String(20), engineType : String(20), modelCode  : String(20)) returns MTSResult;
+
 
 //---------------mto----------------------
 type MTOPartInput {
@@ -95,9 +96,9 @@ type MTOResult {
     iterations          : Integer;
 }
 
-action calculateMTO(
-    items : many MTOInput
-) returns many MTOResult;
+action calculateMTO( items : many MTOInput ) returns many MTOResult;
+
+
 //---------------------ev---------------------------
 type EVInput {
     modelCode  : String(40);
@@ -128,9 +129,11 @@ type EVResult {
 }
 
 action calculateEV(item : EVInput) returns EVResult;
-    //action calculateEV();
+
+
 //--------------------------gem----------------------------
    
+   action calculateGeM(modelCodes: many String(20));
 
     action calculateCSD();
 
