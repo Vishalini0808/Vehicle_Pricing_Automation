@@ -18,7 +18,7 @@ module.exports = cds.service.impl(async function () {
     // ---------  MTS Handler  ----------
     this.on('calculateMTS', async (req) => {
 
-        // console.log(req.data);
+        // console.log(req.data);  
 
         const NSP = req.data.NSP;
         const regionCode = req.data.regionCode;
