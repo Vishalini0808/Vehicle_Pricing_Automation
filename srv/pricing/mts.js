@@ -232,24 +232,29 @@ async function calculateMTS(NSP, regionCode, engineType,modelCode){
     
     console.log("On-Road Price:", onRoadPrice);
 
-    return{
-        NSP,
-        dealerCost,
-        NDP,
-        dealerMargin,
-        totalDealerMargin,
-        otherExpenses,
-        basicPrice,
-        gstAmount,
-        exShowroomPrice,
-        rtoAmount,
-        rtoWithBill,
-        insuranceAmount,
-        tpaPa,
-        insuranceGst,
-        totalInsurance,
-        onRoadPrice
-    }
+    return {
+    NSP,
+    helmet: hemlet,            // or `helmet` if you rename the variable
+    transportation,
+    helmetMargin,
+    dealerCost,
+    NDP,
+    dealerMargin,
+    totalDealerMargin,
+    otherExpenses,
+    basicPrice,
+    gstAmount,
+    exShowroomPrice,
+    rtoPercent,
+    rtoAmount,
+    rtoWithBill,
+    insuranceRate,
+    insuranceAmount,
+    tpaPa,
+    insuranceGst,
+    totalInsurance,
+    onRoadPrice
+};
 
 }
 
