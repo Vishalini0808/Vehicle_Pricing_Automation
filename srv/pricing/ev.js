@@ -11,9 +11,7 @@ async function calculateEV(req) {
     } = cds.entities("vehicle.db");
 
 
-    // =====================================================
     // 1. GET INPUT
-    // =====================================================
 
     const item = req.data.item;
 
@@ -26,9 +24,7 @@ async function calculateEV(req) {
     const nsp = Number(item.nsp);
 
 
-    // =====================================================
     // 2. VALIDATE INPUT
-    // =====================================================
 
     if (!modelCode) {
         return req.reject(
@@ -51,10 +47,7 @@ async function calculateEV(req) {
         );
     }
 
-
-    // =====================================================
     // 3. GET MODEL
-    // =====================================================
 
     const model = await SELECT.one
         .from(Models)
@@ -70,10 +63,7 @@ async function calculateEV(req) {
         );
     }
 
-
-    // =====================================================
     // 4. CHECK EV MODEL
-    // =====================================================
 
     if (
         String(model.engineType).toUpperCase() !== "EV"
@@ -85,9 +75,7 @@ async function calculateEV(req) {
     }
 
 
-    // =====================================================
     // 5. GET EV PRICING COMPONENT
-    // =====================================================
 
     const pricing = await SELECT.one
         .from(PricingComponents)
@@ -104,35 +92,26 @@ async function calculateEV(req) {
         );
     }
 
-
-    // =====================================================
     // 6. TRANSPORTATION
-    // =====================================================
 
     const transportation =
         Number(pricing.transportation || 0);
 
 
-    // =====================================================
     // 7. OTHER EXPENSES
-    // =====================================================
 
     const otherExpenses =
         Number(pricing.otherExpensesBelow500 || 0);
 
 
-    // =====================================================
     // 8. DEALER COST
-    // =====================================================
 
     const dealerCost =
         nsp +
         transportation;
 
 
-    // =====================================================
     // 9. DEALER MARGIN
-    // =====================================================
 
     const dealerMarginPercent =
         Number(model.dealerMarginPercent || 0);
@@ -144,9 +123,7 @@ async function calculateEV(req) {
         100;
 
 
-    // =====================================================
     // 10. BASIC PRICE
-    // =====================================================
 
     const basicPrice =
         dealerCost +
@@ -154,9 +131,7 @@ async function calculateEV(req) {
         dealerMargin;
 
 
-    // =====================================================
     // 11. GST
-    // =====================================================
 
     const gstPercent =
         Number(model.gstPercent || 0);
@@ -168,18 +143,14 @@ async function calculateEV(req) {
         100;
 
 
-    // =====================================================
     // 12. EX-SHOWROOM
-    // =====================================================
 
     const exShowroomPrice =
         basicPrice +
         gstAmount;
 
 
-    // =====================================================
     // 13. GET RTO MASTER
-    // =====================================================
 
     const rtoMaster = await SELECT.one
         .from(RTOMasters)
@@ -197,53 +168,38 @@ async function calculateEV(req) {
     }
 
 
-    // =====================================================
     // 14. RTO CALCULATION
-    // =====================================================
 
     const rtoPercent =
         Number(rtoMaster.rtoPercent || 0);
 
 
     const rtoAmount =
-        exShowroomPrice *
-        rtoPercent /
-        100;
+        exShowroomPrice * rtoPercent ;
 
 
-    // =====================================================
     // 15. INSURANCE
-    // =====================================================
 
     const insuranceRate =
         Number(pricing.insuranceRateBelow350 || 0);
 
 
     const insurance =
-        exShowroomPrice *
-        insuranceRate /
-        100;
+        exShowroomPrice * insuranceRate ;
 
 
-    // =====================================================
     // 16. TPA / PA
-    // =====================================================
 
     const tpaPA =
         Number(pricing.tpaPaBelow350 || 0);
 
 
-    // =====================================================
     // 17. NUMBER PLATE
-    // =====================================================
 
     const numberPlateCharges =
         Number(pricing.noPlateCharges || 0);
 
-
-    // =====================================================
     // 18. ON-ROAD PRICE
-    // =====================================================
 
     const onRoadPrice =
         exShowroomPrice +
@@ -253,9 +209,7 @@ async function calculateEV(req) {
         numberPlateCharges;
 
 
-    // =====================================================
     // 19. RETURN RESULT
-    // =====================================================
 
     return {
 
@@ -272,69 +226,43 @@ async function calculateEV(req) {
             Number(nsp.toFixed(2)),
 
         transportation:
-            Number(
-                transportation.toFixed(2)
-            ),
+            Number(transportation.toFixed(2)),
 
         otherExpenses:
-            Number(
-                otherExpenses.toFixed(2)
-            ),
+            Number(otherExpenses.toFixed(2)),
 
         dealerMargin:
-            Number(
-                dealerMargin.toFixed(2)
-            ),
+            Number(dealerMargin.toFixed(2) ),
 
         basicPrice:
-            Number(
-                basicPrice.toFixed(2)
-            ),
+            Number(basicPrice.toFixed(2)),
 
         gstAmount:
-            Number(
-                gstAmount.toFixed(2)
-            ),
+            Number(gstAmount.toFixed(2)),
 
         exShowroomPrice:
-            Number(
-                exShowroomPrice.toFixed(2)
-            ),
+            Number(exShowroomPrice.toFixed(2)),
 
         rtoPercent:
-            Number(
-                rtoPercent.toFixed(4)
-            ),
+            Number(rtoPercent.toFixed(4)),
 
         rtoAmount:
-            Number(
-                rtoAmount.toFixed(2)
-            ),
+            Number(rtoAmount.toFixed(2)),
 
         insuranceRate:
-            Number(
-                insuranceRate.toFixed(4)
-            ),
+            Number(insuranceRate.toFixed(4)),
 
         insurance:
-            Number(
-                insurance.toFixed(2)
-            ),
+            Number(insurance.toFixed(2)),
 
         tpaPA:
-            Number(
-                tpaPA.toFixed(2)
-            ),
+            Number(tpaPA.toFixed(2)),
 
         numberPlateCharges:
-            Number(
-                numberPlateCharges.toFixed(2)
-            ),
+            Number(numberPlateCharges.toFixed(2)),
 
         onRoadPrice:
-            Number(
-                onRoadPrice.toFixed(2)
-            )
+            Number(onRoadPrice.toFixed(2))
     };
 }
 
