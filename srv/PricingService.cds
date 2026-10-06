@@ -128,8 +128,10 @@ service PricingService {
 
     action calculateGeM(modelCodes: many String(20));
 
-    action calculateCSD();
-
+    action calculateCSD(
+        modelCode  : many String,
+        regionCode : String
+    );
     action calculateMultiRegion();
 
     action submitPricing(resultIDs: many UUID,
