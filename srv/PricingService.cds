@@ -89,7 +89,7 @@ service PricingService {
         iterations         : Integer;
     }
 
-    action calculateMTO(items: many MTOInput)                                                                       returns many MTOResult;
+    action calculateMTO(items: many MTOInput) returns many MTOResult;
 
 
     //---------------------ev---------------------------
@@ -121,7 +121,7 @@ service PricingService {
         onRoadPrice        : Decimal(15, 2);
     }
 
-    action calculateEV(item: EVInput)                                                                               returns EVResult;
+    action calculateEV(item: EVInput) returns EVResult;
 
 
     //--------------------------gem----------------------------
@@ -133,19 +133,19 @@ service PricingService {
     action calculateMultiRegion();
 
     action submitPricing(resultIDs: many UUID,
-                         comments: String(1000))                                                                    returns {
+                         comments: String(1000)) returns {
         referenceNumber : String(30);
         status          : String(20);
         lines           : Integer;
     };
 
-    action approvePricing(referenceNumber: String(30))                                                              returns {
+    action approvePricing(referenceNumber: String(30)) returns {
         referenceNumber : String(30);
         status          : String(20);
         lines           : Integer;
     };
 
-    action rejectPricing(referenceNumber: String(30), comments: String(1000))                                       returns {
+    action rejectPricing(referenceNumber: String(30), comments: String(1000)) returns {
         referenceNumber : String(30);
         status          : String(20);
         lines           : Integer;
