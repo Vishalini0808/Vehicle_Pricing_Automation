@@ -290,6 +290,8 @@ entity Submissions {
 
         status          : ApprovalStatus default 'SUBMITTED';
         comments        : String(1000);
+
+        pricingResults  : Composition of many PricingResults on pricingResults.submission = $self;
 }
 
 // entity ApprovalHistory {

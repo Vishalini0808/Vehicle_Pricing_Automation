@@ -132,6 +132,7 @@ service PricingService {
         modelCode  : many String,
         regionCode : String
     );
+    
     action calculateMultiRegion();
 
     action submitPricing(resultIDs: many UUID,
