@@ -142,7 +142,12 @@ module.exports = cds.service.impl(async function () {
         const result = await calculateGeM(modelCodes);
     });
 
-    this.on("calculateCSD", calculateCSD);
+    this.on("calculateCSD", async(req) => {
+
+        const { modelCode, regionCode } = req.data;
+
+        return await calculateCSD( modelCode, regionCode);
+    });
 
     this.on("submitPricing", submitPricing);
 

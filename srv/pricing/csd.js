@@ -160,7 +160,7 @@ async function calculateCSD(modelCodes, regionCode) {
     }
 
     // Return all calculated models
-    // return results;
+    return results;
 }
 
 module.exports = {
