@@ -16,6 +16,7 @@ entity Regions {
     key regionCode : String(10);
         regionName : String(100);
         rtoBasis   : String(20); //rto price
+        status : ApprovalStatus ;
 }
 
 type orderTypes     : String enum {
