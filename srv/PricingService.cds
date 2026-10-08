@@ -133,7 +133,26 @@ service PricingService {
         regionCode : String
     );
     
-    action calculateMultiRegion();
+    type MultiRegionResult {
+    ID              : UUID;
+    modelCode       : String(40);
+    regionCode      : String(10);
+    orderType       : String(10);
+    actualNSP       : Decimal(15, 2);
+    exShowroomPrice : Decimal(15, 2);
+    onRoadPrice     : Decimal(15, 2);
+    status          : String(20);
+    }
+
+    type MultiRegionInput {
+        modelCodes  : many String(40);
+        regionCodes : many String(10);
+        orderType   : String(10);
+    }
+
+    action calculateMultiRegion(
+        input : MultiRegionInput
+    ) returns many MultiRegionResult;
 
     action submitPricing(resultIDs: many UUID,
                          comments: String(1000)) returns {

@@ -7,6 +7,7 @@ const { calculateCSD } = require("./pricing/csd");
 const { INSERT } = require("@sap/cds/lib/ql/cds-ql");
 const { submitPricing } = require("./workflow/submission");
 const { approvePricing, rejectPricing } = require("./workflow/approval");
+const calculateMultiRegion = require("./region/multiRegion");
 // const { calculateMultiRegion } = require("./region/multiRegion");
 
 module.exports = cds.service.impl(async function () {
@@ -142,11 +143,11 @@ module.exports = cds.service.impl(async function () {
         const result = await calculateGeM(modelCodes);
     });
 
-    this.on("calculateCSD", async(req) => {
+    this.on("calculateCSD", async (req) => {
 
         const { modelCode, regionCode } = req.data;
 
-        return await calculateCSD( modelCode, regionCode);
+        return await calculateCSD(modelCode, regionCode);
     });
 
     this.on("submitPricing", submitPricing);
@@ -155,6 +156,8 @@ module.exports = cds.service.impl(async function () {
 
     this.on("rejectPricing", rejectPricing);
 
-    // this.on("calculateMultiRegion", calculateMultiRegion);
+    this.on("calculateMultiRegion", (req) =>
+        calculateMultiRegion(req, this)
+    );
 
 });
