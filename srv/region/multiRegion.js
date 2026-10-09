@@ -8,6 +8,10 @@ module.exports = async function (req, srv) {
 
     const { modelCodes, regionCodes, orderType } = input;
 
+    console.log("Regions received:", regionCodes);
+    console.log("Models received:", modelCodes);
+    console.log("Order type received:", orderType);
+
     const allowedOrderTypes = ["MTS", "MTO", "EV", "CSD"];
 
     if (!Array.isArray(modelCodes) || modelCodes.length === 0) {
@@ -95,6 +99,9 @@ module.exports = async function (req, srv) {
         // 5. Calculate selected regions
         // ---------------------------------------------------------
         for (const regionCode of regionCodes) {
+
+                console.log("Processing region:", regionCode);
+
 
             let result;
 
