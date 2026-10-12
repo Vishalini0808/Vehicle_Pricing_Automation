@@ -7,8 +7,7 @@ async function calculateMTO(req) {
     const items = req.data.items || [];
     const results = [];
 
-    if (items.length === 0) req.error(400, "Please provide at least one MTO item");
-
+if (items.length === 0) return req.reject(400, "Please provide at least one MTO item");
     for (const item of items) {
         const { modelCode, regionCode, engineType, orderType, validFrom, parts } = item;
 
@@ -20,36 +19,39 @@ async function calculateMTO(req) {
         console.log("Order Type :", orderType);
         console.log("Date :", validFrom);
 
-        if (!modelCode) req.error(400, "modelCode is required");
-        if (!regionCode) req.error(400, "regionCode is required");
-        if (!validFrom) req.error(400, "validFrom is required");
-        if (orderType !== "MTO") req.error(400, "orderType must be MTO");
+        if (!modelCode) return req.reject(400, "modelCode is required");
+if (!regionCode) return req.reject(400, "regionCode is required");
+if (!validFrom) return req.reject(400, "validFrom is required");
+if (orderType !== "MTO") return req.reject(400, "orderType must be MTO");
 
         console.log("\nSTEP 1: FIND MTO CONFIGURATION");
 
-        const configurations = await tx.run(SELECT.from(MTOConfigurations).where({ referenceMTSModel_modelCode: modelCode }));
+        const configurations = await tx.run(
+            SELECT.from(MTOConfigurations).where({ mtoModelCode: modelCode })
+        );
 
-        if (!configurations || configurations.length === 0) req.error(404, `MTO Configuration not found for MTS model ${modelCode}`);
+        // temp log:
+        const all = await tx.run(SELECT.from(MTOConfigurations).columns('mtoModelCode', 'referenceMTSModel_modelCode'));
+console.log('Looking for:', modelCode, '| In DB:', all);
+
+        if (!configurations.length)
+            return req.reject(404, `MTO Configuration not found for MTO model ${modelCode}`);
 
         const selectedDate = new Date(validFrom);
-
-        const validConfigurations = configurations.filter(config => config.validFrom && new Date(config.validFrom) <= selectedDate).sort((a, b) => new Date(b.validFrom) - new Date(a.validFrom));
-
-        if (validConfigurations.length === 0) req.error(404, `No valid MTO Configuration found for ${modelCode} on ${validFrom}`);
+        const validConfigurations = configurations
+            .filter(c => !c.validFrom || new Date(c.validFrom) <= selectedDate)   // see note below
+            .sort((a, b) => new Date(b.validFrom || 0) - new Date(a.validFrom || 0));
+        if (!validConfigurations.length)
+            return req.reject(404, `No valid MTO Configuration for ${modelCode} on ${validFrom}`);
 
         const mtoConfiguration = validConfigurations[0];
         const mtoModelCode = mtoConfiguration.mtoModelCode;
         const referenceMTSModel = mtoConfiguration.referenceMTSModel_modelCode;
 
-        console.log("MTO Model Code :", mtoModelCode);
-        console.log("Valid From :", mtoConfiguration.validFrom);
-        console.log("Reference MTS :", referenceMTSModel);
-
         console.log("\nSTEP 2: FIND MTS MODEL");
 
-        const mtsModel = await tx.run(SELECT.one.from(Models).where({ modelCode: modelCode }));
-
-        if (!mtsModel) req.error(404, `MTS Model ${modelCode} not found`);
+        const mtsModel = await tx.run(SELECT.one.from(Models).where({ modelCode: referenceMTSModel }));
+        if (!mtsModel) return req.reject(404, `MTS Model ${referenceMTSModel} not found`);
 
         console.log("MTS Model found :", mtsModel.modelCode);
 
@@ -57,19 +59,15 @@ async function calculateMTO(req) {
 
         console.log("\nSTEP 3: CHECK MTS PRICING RESULT");
 
-        const allPricingResults = await tx.run(SELECT.from(PricingResults));
-
-        console.log("TOTAL PRICING RESULTS :", allPricingResults.length);
-
-        const mtsPricingResult = allPricingResults.find(row =>
-            row.model_modelCode === modelCode &&
-            row.region_regionCode === regionCode &&
-            row.orderType === "MTS"
+        const mtsPricingResult = await tx.run(
+            SELECT.one.from(PricingResults).where({
+                model_modelCode: referenceMTSModel,
+                region_regionCode: regionCode,
+                orderType: "MTS"
+            })
         );
-
-        if (!mtsPricingResult) {
-            req.error(404, `MTS PricingResult not found for ${modelCode} / ${regionCode}`);
-        }
+        if (!mtsPricingResult)
+            return req.reject(404, `MTS PricingResult not found for ${referenceMTSModel} / ${regionCode}`);
 
         console.log("MTS PricingResult found");
         console.log("Status :", mtsPricingResult.status);
@@ -80,8 +78,8 @@ async function calculateMTO(req) {
         const mtsNSP = Number(mtsPricingResult.actualNSP || 0);
         const mtsExShowroom = Number(mtsPricingResult.exShowroomPrice || 0);
         const mtsOnRoad = Number(mtsPricingResult.onRoadPrice || 0);
-        
-        
+
+
         console.log("\nSTEP 4: FIND SELECTED PARTS");
 
         let miyExShowroomTotal = 0;
@@ -97,7 +95,7 @@ async function calculateMTO(req) {
 
             const part = await tx.run(SELECT.one.from(Parts).where({ partCode: partCode }));
 
-            if (!part) req.error(404, `Part ${partCode} not found`);
+            if (!part) return req.reject(404, `Part ${partCode} not found`);
 
             const miyCost = Number(part.miyCost || 0);
             const miyMarkup = Number(part.miyMarkup || 0);

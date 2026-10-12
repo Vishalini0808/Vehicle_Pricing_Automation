@@ -118,6 +118,8 @@ entity Parts {
         miyMarkup      : Decimal(15, 2); // Markup added to the MIY cost
 
         priceIndicator : String(20); // Indicates how the part price should be handled
+
+        approvalStatus : ApprovalStatus default 'DRAFT';
 };
 
 
@@ -129,16 +131,18 @@ entity MTOConfigurations {
 
         parts             : Composition of many MTOConfigurationParts
                                 on parts.configuration = $self; // Parts belonging to this MTO configuration
+
+        approvalStatus : ApprovalStatus default 'DRAFT';
 };
 
 
+@assert.unique: { partPerConfig: [configuration, part] }
 entity MTOConfigurationParts {
-    key partNo        : Integer;
+    key ID            : UUID;
         configuration : Association to MTOConfigurations; // MTO configuration this part belongs to
         part          : Association to Parts; // Part selected for this configuration
         quantity      : Integer; // Quantity of this part required
 };
-
 
 entity PricingResults {
 
