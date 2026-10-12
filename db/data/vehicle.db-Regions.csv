@@ -1,29 +1,29 @@
-regionCode,regionName,rtoBasis
-TN01,Tamil Nadu,ExShowroom
-KA02,Karnataka,ExShowroom
-KL03,Kerala,ExShowroom
-AP04,Andhra Pradesh,ExShowroom
-TS05,Telangana,ExShowroom
-MH06,Maharashtra,ExShowroom
-GJ07,Gujarat,ExShowroom
-RJ08,Rajasthan,ExShowroom
-DL09,Delhi,ExShowroom
-HR10,Haryana,ExShowroom
-PB11,Punjab,ExShowroom
-UP12,Uttar Pradesh,ExShowroom
-MP13,Madhya Pradesh,ExShowroom
-WB14,West Bengal,ExShowroom
-BR15,Bihar,ExShowroom
-OD16,Odisha,ExShowroom
-JH17,Jharkhand,ExShowroom
-CG18,Chhattisgarh,ExShowroom
-AS19,Assam,ExShowroom
-UK20,Uttarakhand,ExShowroom
-HP21,Himachal Pradesh,ExShowroom
-JK22,Jammu and Kashmir,ExShowroom
-GA23,Goa,ExShowroom
-AR24,Arunachal Pradesh,ExShowroom
-MN25,Manipur,ExShowroom
-ML26,Meghalaya,ExShowroom
-TR27,Tripura,ExShowroom
-SK28,Sikkim,ExShowroom
+regionCode,regionName,rtoBasis,status
+TN01,Tamil Nadu,ExShowroom,APPROVED
+KA02,Karnataka,ExShowroom,APPROVED
+KL03,Kerala,ExShowroom,APPROVED
+AP04,Andhra Pradesh,ExShowroom,APPROVED
+TS05,Telangana,ExShowroom,APPROVED
+MH06,Maharashtra,ExShowroom,APPROVED
+GJ07,Gujarat,ExShowroom,APPROVED
+RJ08,Rajasthan,ExShowroom,APPROVED
+DL09,Delhi,ExShowroom,APPROVED
+HR10,Haryana,ExShowroom,APPROVED
+PB11,Punjab,ExShowroom,APPROVED
+UP12,Uttar Pradesh,ExShowroom,APPROVED
+MP13,Madhya Pradesh,ExShowroom,APPROVED
+WB14,West Bengal,ExShowroom,APPROVED
+BR15,Bihar,ExShowroom,APPROVED
+OD16,Odisha,ExShowroom,APPROVED
+JH17,Jharkhand,ExShowroom,APPROVED
+CG18,Chhattisgarh,ExShowroom,APPROVED
+AS19,Assam,ExShowroom,APPROVED
+UK20,Uttarakhand,ExShowroom,APPROVED
+HP21,Himachal Pradesh,ExShowroom,APPROVED
+JK22,Jammu and Kashmir,ExShowroom,APPROVED
+GA23,Goa,ExShowroom,APPROVED
+AR24,Arunachal Pradesh,ExShowroom,APPROVED
+MN25,Manipur,ExShowroom,APPROVED
+ML26,Meghalaya,ExShowroom,APPROVED
+TR27,Tripura,ExShowroom,APPROVED
+SK28,Sikkim,ExShowroom,APPROVED
