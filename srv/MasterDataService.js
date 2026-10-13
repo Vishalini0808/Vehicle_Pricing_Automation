@@ -32,6 +32,85 @@ module.exports = class MasterService extends cds.ApplicationService {
       }
     });
 
+    const updateMasterStatus = async (req, newStatus) => {
+
+      const { entityName, recordKey } = req.data;
+
+      const entity = this.entities[entityName];
+
+      if (!entity) {
+        return req.reject(400, "Entity not found");
+      }
+
+      // Dynamically identify approval field
+      const statusField =
+        (entity.elements.approvalStatus && "approvalStatus") ||
+        (entity.elements.status && "status");
+
+      if (!statusField) {
+        return req.reject(400, "Status field not found");
+      }
+
+      // Parse primary key
+      let key;
+
+      try {
+        key = JSON.parse(recordKey);
+      } catch (error) {
+        return req.reject(400, "Invalid record key");
+      }
+
+      if (!key || typeof key !== "object" || Array.isArray(key)) {
+        return req.reject(400, "Invalid record key");
+      }
+
+      // Validate exact primary key fields
+      const expectedKeys = Object.keys(entity.keys);
+
+      if (
+        Object.keys(key).length !== expectedKeys.length ||
+        !expectedKeys.every(
+          field =>
+            Object.prototype.hasOwnProperty.call(key, field) &&
+            key[field] !== null &&
+            key[field] !== undefined
+        )
+      ) {
+        return req.reject(400, "Invalid primary key fields");
+      }
+
+      const tx = cds.tx(req);
+
+      // Update only submitted records
+      const updated = await tx.run(
+        UPDATE(entity)
+          .set({
+            [statusField]: newStatus
+          })
+          .where({
+            ...key,
+            [statusField]: "SUBMITTED"
+          })
+      );
+
+      if (updated !== 1) {
+        return req.reject(
+          409,
+          "Record not found or not in SUBMITTED status"
+        );
+      }
+
+      return true;
+    };
+
+    this.on("approveMaster", async (req) => {
+      return updateMasterStatus(req, "APPROVED");
+    });
+
+    this.on("rejectMaster", async (req) => {
+      return updateMasterStatus(req, "REJECTED");
+    });
+
     return super.init();
   }
 };

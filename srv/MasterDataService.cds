@@ -27,5 +27,14 @@ service MasterService {
     entity MTOConfigurationParts
         as projection on db.MTOConfigurationParts;
  
+     action approveMaster(
+        entityName : String,
+        recordKey  : String
+    ) returns Boolean;
 
+    action rejectMaster(
+        entityName : String,
+        recordKey  : String
+    ) returns Boolean;
+    
 }
