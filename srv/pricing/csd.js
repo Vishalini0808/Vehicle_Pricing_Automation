@@ -24,7 +24,12 @@ async function calculateCSD(modelCodes, regionCode) {
             .where({ modelCode });
 
         if (!model) {
-            throw new Error(`Model ${modelCode} not found`);
+            const error = new Error(
+                `Model ${modelCode} not found`
+            );
+
+            error.statusCode = 400;
+            throw error;
         }
 
         // 2. Get APPROVED MTS pricing
@@ -38,9 +43,12 @@ async function calculateCSD(modelCodes, regionCode) {
             });
 
         if (!mtsPrice) {
-            throw new Error(
-                `No approved MTS pricing found for model ${modelCode} in region ${regionCode}`
+            const error = new Error(
+                `No approved MTS pricing found for model ${modelCode} in region ${regionCode}. Please approve MTS pricing before calculating CSD.`
             );
+
+            error.statusCode = 400;
+            throw error;
         }
 
         // 3. CSD NSP

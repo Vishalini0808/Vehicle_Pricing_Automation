@@ -1,25 +1,32 @@
 async function calculateGeM(modelCodes) {
- 
+
     const { PricingResults, Models } = cds.entities("vehicle.db");
     console.log(modelCodes);
- 
+
     if (!modelCodes) {
-        throw new Error(`Model not selected`);
+        const error = new Error("Please select at least one model.");
+        error.statusCode = 400;
+        throw error;
     }
     for (const modelCode of modelCodes) {
         // 1. Validate Model
- 
+
         const model = await SELECT.one
             .from(Models)
             .where({ modelCode });
- 
+
         if (!model) {
-            throw new Error(`Model ${modelCode} not found`);
+            const error = new Error(
+                `Model ${modelCode} not found`
+            );
+
+            error.statusCode = 400;
+            throw error;
         }
- 
- 
+
+
         // 2. Get APPROVED MTS pricing for this model across ALL regions
- 
+
         // await UPDATE(PricingResults)
         //     .set({
         //         status: "APPROVED"
@@ -27,7 +34,7 @@ async function calculateGeM(modelCodes) {
         //     .where({
         //         ID: "10000000-0000-0000-0000-000000000018"
         //     });
- 
+
         const mtsPrices = await SELECT
             .from(PricingResults)
             .where({
@@ -35,19 +42,22 @@ async function calculateGeM(modelCodes) {
                 orderType: "MTS",
                 status: "APPROVED"
             });
- 
+
         console.log("mts prices:", mtsPrices);
- 
- 
- 
+
+
+
         if (!mtsPrices.length) {
-            throw new Error(
-                `No approved MTS pricing found for model ${modelCode}`
+            const error = new Error(
+                `No approved MTS pricing found for model ${modelCode}. Please approve MTS pricing before calculating GeM.`
             );
+
+            error.statusCode = 400;
+            throw error;
         }
- 
+
         // 3. Find LOWEST Ex-Showroom across ALL regions
- 
+
         const lowestPriceLine = mtsPrices.reduce(
             (lowest, current) =>
                 Number(current.exShowroomPrice) <
@@ -55,84 +65,84 @@ async function calculateGeM(modelCodes) {
                     ? current
                     : lowest
         );
- 
+
         // 4. Get lowest approved MTS Ex-Showroom
- 
+
         const mtsExShowroom = Number(
             lowestPriceLine.exShowroomPrice
         );
- 
+
         // 5. GeM Discount
         //    Standard discount = 12%
- 
+
         const discountPercent = 12;
- 
+
         const discountAmount = mtsExShowroom * (discountPercent / 100);
- 
+
         // 6. Final GeM Price
         //    Sub-Total = Ex-Showroom - Discount
- 
+
         const gemPrice = mtsExShowroom - discountAmount;
- 
+
         // 7. Get GST % from Model Master
- 
+
         const gstPercent = Number(
             model.gstPercent || 0
         );
- 
+
         // 8. Back out GST
         //    GeM Basic = Sub-Total / (1 + GST %)
- 
+
         const gemBasic = gemPrice / (1 + gstPercent / 100);
- 
+
         // 9. Calculate GeM GST Amount
         //    GST Amount = Sub-Total - GeM Basic
- 
+
         const gemGSTAmount = gemPrice - gemBasic;
- 
+
         // 10. Create PricingResults record
         const gemResult = {
             ID: cds.utils.uuid(),
- 
+
             // Model
             model_modelCode: modelCode,
- 
+
             // GeM
             orderType: "GEM",
- 
+
             lowestMtsExShowroom:
                 Number(mtsExShowroom.toFixed(2)),
- 
+
             gemDiscountPercent:
                 Number(discountPercent.toFixed(2)),
- 
+
             gemDiscountAmount:
                 Number(discountAmount.toFixed(2)),
- 
+
             gemSubTotal:
                 Number(gemPrice.toFixed(2)),
- 
+
             gemBasic:
                 Number(gemBasic.toFixed(2)),
- 
+
             gemGstAmount:
                 Number(gemGSTAmount.toFixed(2)),
- 
+
             finalGemPrice:
                 Number(gemPrice.toFixed(2)),
- 
+
             // Initial approval status
             status: "DRAFT"
         };
- 
+
         // 11. Save into PricingResults
         await INSERT
             .into(PricingResults)
             .entries(gemResult);
-           
+
     }
 }
- 
+
 module.exports = {
     calculateGeM
 }
