@@ -100,7 +100,7 @@ module.exports = async function (req, srv) {
         // ---------------------------------------------------------
         for (const regionCode of regionCodes) {
 
-                console.log("Processing region:", regionCode);
+            console.log("Processing region:", regionCode);
 
 
             let result;
@@ -152,13 +152,33 @@ module.exports = async function (req, srv) {
                 // MTO
                 // =================================================
                 case "MTO":
+                    const { MTOConfigurationParts } = srv.entities;
 
-                    return req.reject(
-                        400,
-                        "MTO requires the configured parts for each model. " +
-                        "Load the MTO configuration and its parts before " +
-                        "dispatching calculateMTO."
-                    );
+                    // Fetch configured parts for the selected MTO model
+                    const configuredParts = await SELECT
+                        .from(MTOConfigurationParts)
+                        .where({
+                            configuration_mtoModelCode: modelCode
+                        });
+
+                    const parts = configuredParts.map(part => ({
+                        partCode: part.part_partCode,
+                        quantity: part.quantity
+                    }));
+
+                    // Reuse existing calculateMTO action
+                    result = await srv.send("calculateMTO", {
+                        items: [{
+                            modelCode: modelCode,
+                            regionCode: regionCode,
+                            engineType: model.engineType,
+                            orderType: "MTO",
+                            validFrom: model.validFrom,
+                            parts: parts
+                        }]
+                    });
+
+                    break;
             }
 
             // -----------------------------------------------------
