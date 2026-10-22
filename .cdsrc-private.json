@@ -14,6 +14,20 @@
         "vcap": {
           "name": "db"
         }
+      },
+      "vpa_alertdestination_key": {
+        "binding": {
+          "type": "cf",
+          "apiEndpoint": "https://api.cf.us10-001.hana.ondemand.com",
+          "org": "5a566441trial",
+          "space": "dev",
+          "instance": "vpa_alertdestination",
+          "key": "vpa_alertdestination-key"
+        },
+        "kind": "destinations",
+        "vcap": {
+          "name": "vpa_alertdestination_key"
+        }
       }
     }
   }

@@ -8,6 +8,8 @@ const { INSERT, SELECT } = require("@sap/cds/lib/ql/cds-ql");
 const { submitPricing } = require("./workflow/submission");
 const { approvePricing, rejectPricing } = require("./workflow/approval");
 const calculateMultiRegion = require("./region/multiRegion");
+const { resources } = require("@sap/cds/lib/dbs/cds-deploy");
+const { path } = require("@sap/cds/lib/compile/parse");
 // const { calculateMultiRegion } = require("./region/multiRegion");
 
 module.exports = cds.service.impl(async function () {
@@ -152,6 +154,48 @@ module.exports = cds.service.impl(async function () {
     });
 
     this.on("submitPricing", submitPricing);
+    
+
+   /* this.after("submitPricing", async (submission) => {
+
+        console.log('create after submission');
+
+        console.log(submission);
+    try {
+        const alertService = await cds.connect.to("AlertNotification");
+
+        console.log('destination connection',alertService);
+
+        const event = {
+            eventType: "VehiclePricingSubmitted",
+            resource: {
+                resourceName: "Vehicle Pricing Automation",
+                resourceType: "application"
+            },
+            severity: "INFO",
+            category: "NOTIFICATION",
+            subject: "New Vehicle Pricing Submission",
+            body: `A new pricing submission was created. Reference: ${submission.referenceNumber}`
+        };
+
+      
+        const response = await alertService.send({
+            method: "POST",
+            path: "/cf/producer/v1/resource-events",
+            data: event,
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        console.log('response',response);
+
+        console.log("Alert Notification published:", response);
+
+    } catch (error) {
+        console.error("Alert Notification failed:", error.message);
+    }
+});*/
 
     this.on("approvePricing", approvePricing);
 
@@ -161,22 +205,70 @@ module.exports = cds.service.impl(async function () {
         calculateMultiRegion(req, this)
     );
 
-   this.on("notifyPendingApprovals", async () => {
-    const { Submissions } = this.entities;
 
-    const pendingSubmissions = await SELECT
-        .from(Submissions)
-        .columns("ID", "referenceNumber", "submitterEmail", "status")
-        .where({ status: "SUBMITTED" });
+
+   this.on("notifyPendingApprovals", async () => {
+    
+    const { Submissions } = this.entities;
+  
+    const pendingSubmissions = await SELECT .from(Submissions).columns("ID", "referenceNumber", "submitterEmail", "status").where({ status: "SUBMITTED" });
 
     console.log("Pending submissions:", pendingSubmissions.length);
     console.log(pendingSubmissions);
 
     if (pendingSubmissions.length === 0) {
         return "No pending vehicle pricing approvals";
+
     }
 
-    return `Found ${pendingSubmissions.length} pending approval requests.`;
+    const pendingCount=pendingSubmissions.length;
+
+  
+
+
+    try {
+        const alertService = await cds.connect.to("AlertNotification");
+
+        console.log('destination connection',alertService);
+
+        const event = {
+            eventType: "VehiclePricingSubmitted",
+            resource: {
+                resourceName: "Vehicle Pricing Automation",
+                resourceType: "application"
+            },
+            severity: "INFO",
+            category: "NOTIFICATION",
+            subject: "New Vehicle Pricing Submission",
+            body:  `${pendingCount} vehicle pricing requests are pending approval. Please review them in the application.`,
+            tags:{
+                   nameCount: String(pendingCount)
+            }
+        };
+
+      
+        const response = await alertService.send({
+            method: "POST",
+            path: "/cf/producer/v1/resource-events",
+            data: event,
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        console.log('response',response);
+
+        console.log("Alert Notification published:", response);
+
+        return `Found ${pendingSubmissions.length} pending approval requests.`;
+
+
+    } catch (error) {
+        console.error("Alert Notification failed:", error.message);
+
+        throw error;
+    }
+
 });
 
 });
