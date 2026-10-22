@@ -4,7 +4,7 @@ const calculateMTO = require("./pricing/mto");
 const { calculateEV } = require("./pricing/ev");
 const { calculateGeM } = require("./pricing/gem");
 const { calculateCSD } = require("./pricing/csd");
-const { INSERT } = require("@sap/cds/lib/ql/cds-ql");
+const { INSERT, SELECT } = require("@sap/cds/lib/ql/cds-ql");
 const { submitPricing } = require("./workflow/submission");
 const { approvePricing, rejectPricing } = require("./workflow/approval");
 const calculateMultiRegion = require("./region/multiRegion");
@@ -160,5 +160,23 @@ module.exports = cds.service.impl(async function () {
     this.on("calculateMultiRegion", (req) =>
         calculateMultiRegion(req, this)
     );
+
+   this.on("notifyPendingApprovals", async () => {
+    const { Submissions } = this.entities;
+
+    const pendingSubmissions = await SELECT
+        .from(Submissions)
+        .columns("ID", "referenceNumber", "submitterEmail", "status")
+        .where({ status: "SUBMITTED" });
+
+    console.log("Pending submissions:", pendingSubmissions.length);
+    console.log(pendingSubmissions);
+
+    if (pendingSubmissions.length === 0) {
+        return "No pending vehicle pricing approvals";
+    }
+
+    return `Found ${pendingSubmissions.length} pending approval requests.`;
+});
 
 });
