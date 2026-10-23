@@ -49,50 +49,37 @@ module.exports = async function (req, srv) {
             );
         }
 
+                // ---------------------------------------------------------
+        // 2. Tamil Nadu base NSP (MTS / EV / CSD only).
+        //    MTO does not need it: calculateMTO finds the NSP itself from the
+        //    APPROVED MTS price of the reference model in each region.
         // ---------------------------------------------------------
-        // 2. Determine the TN base pricing type
-        // ---------------------------------------------------------
-        const baseOrderType =
-            orderType === "EV" ? "EV" : "MTS";
+        let tnNSP = null;
 
-        // ---------------------------------------------------------
-        // 3. Get TN pricing result
-        // ---------------------------------------------------------
-        const baseResult = await SELECT.one
-            .from(PricingResults)
-            .columns(
-                "ID",
-                "actualNSP",
-                "inputNSP",
-                "nspPrice",
-                "status"
-            )
-            .where({
-                model_modelCode: modelCode,
-                region_regionCode: "TN01",
-                orderType: baseOrderType
-            });
+        if (orderType !== "MTO") {
+            const baseOrderType = orderType === "EV" ? "EV" : "MTS";
 
-        if (!baseResult) {
-            return req.reject(
-                400,
-                `Calculate Tamil Nadu ${baseOrderType} pricing first for ${modelCode}.`
-            );
-        }
+            const baseResult = await SELECT.one
+                .from(PricingResults)
+                .columns("ID", "actualNSP", "inputNSP", "nspPrice", "status")
+                .where({
+                    model_modelCode: modelCode,
+                    region_regionCode: "TN01",
+                    orderType: baseOrderType
+                });
 
-        // ---------------------------------------------------------
-        // 4. Get NSP from TN pricing
-        // ---------------------------------------------------------
-        const tnNSP =
-            baseResult.inputNSP ??
-            baseResult.actualNSP ??
-            baseResult.nspPrice;
+            if (!baseResult) {
+                return req.reject(
+                    400,
+                    `Calculate Tamil Nadu ${baseOrderType} pricing first for ${modelCode}.`
+                );
+            }
 
-        if (tnNSP == null) {
-            return req.reject(
-                400,
-                `Tamil Nadu NSP is missing for ${modelCode}.`
-            );
+            tnNSP = baseResult.inputNSP ?? baseResult.actualNSP ?? baseResult.nspPrice;
+
+            if (tnNSP == null) {
+                return req.reject(400, `Tamil Nadu NSP is missing for ${modelCode}.`);
+            }
         }
 
         // ---------------------------------------------------------
@@ -151,34 +138,19 @@ module.exports = async function (req, srv) {
                 // =================================================
                 // MTO
                 // =================================================
-                case "MTO":
-                    const { MTOConfigurationParts } = srv.entities;
-
-                    // Fetch configured parts for the selected MTO model
-                    const configuredParts = await SELECT
-                        .from(MTOConfigurationParts)
-                        .where({
-                            configuration_mtoModelCode: modelCode
-                        });
-
-                    const parts = configuredParts.map(part => ({
-                        partCode: part.part_partCode,
-                        quantity: part.quantity
-                    }));
-
-                    // Reuse existing calculateMTO action
+                               case "MTO": {
                     result = await srv.send("calculateMTO", {
                         items: [{
-                            modelCode: modelCode,
-                            regionCode: regionCode,
+                            modelCode,
+                            regionCode,
                             engineType: model.engineType,
                             orderType: "MTO",
-                            validFrom: model.validFrom,
-                            parts: parts
+                            validFrom: model.validFrom
                         }]
                     });
-
                     break;
+                }
+                
             }
 
             // -----------------------------------------------------

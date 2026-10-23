@@ -47,11 +47,7 @@ service PricingService {
     action calculateMTS(NSP: Decimal(15, 2), regionCode: String(20), engineType: String(20), modelCode: String(20)) returns MTSResult;
 
 
-    //---------------mto----------------------
-    type MTOPartInput {
-        partCode : String(50);
-        quantity : Integer;
-    }
+
 
     type MTOInput {
         modelCode  : String(40);
@@ -59,7 +55,7 @@ service PricingService {
         engineType : String(20);
         orderType  : String(10);
         validFrom  : Date;
-        parts      : many MTOPartInput;
+      
     }
 
     type MTOResult {
