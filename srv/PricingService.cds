@@ -173,5 +173,5 @@ service PricingService {
         lines           : Integer;
     };
 
-
+     action notifyPendingApprovals() returns String;
 }
