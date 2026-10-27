@@ -153,7 +153,8 @@ async function calculateMTO(req) {
             SELECT.one.from(PricingResults).where({
                 model_modelCode: referenceMTSModel,
                 region_regionCode: regionCode,
-                orderType: "MTS"
+                orderType: "MTS",
+                status : "APPROVED"
             })
         );
  
